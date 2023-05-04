@@ -400,12 +400,30 @@ void AdministradoraNeurona::conectar(int vertex, int edge)
 
     while(tempConectado != nullptr)
     {
-        if(tempConectado->conexionCercana == nullptr){tempConectado->conexionCercana = nuevoNodo; std::cout << "Conectado" << tempConectado->neurona->getId() << " " << tempConectado->conexionCercana->neurona->getId() <<std::endl; break;}
+        if(tempConectado->conexionCercana == nullptr)
+        {
+            tempConectado->conexionCercana = nuevoNodo;
+            std::cout << "Conectado " << tempConectado->neurona->getId() << " con "
+                      << tempConectado->conexionCercana->neurona->getId() <<std::endl;
+            break;
+        }
         tempConectado = tempConectado->conexionCercana;
     }
     delete nuevoNodo;
+}
+float AdministradoraNeurona::getVoltaje(int& pos)
+{
+    Nodo* nodoTemporal = inicio;
 
-
+    for(int i = C_0; i<contadorNeuronas && nodoTemporal != NULL; i++)
+    {
+        if(i == pos)
+        {
+            return nodoTemporal->neurona->getVoltaje();
+        }
+        nodoTemporal = nodoTemporal->siguiente;
+    }
+    return -1;
 }
 
 void MainWindow::enableDarkMode()
@@ -632,6 +650,10 @@ void MainWindow::on_pushButton_3_clicked()
 {
     int x1, y1, x2, y2, pos;
     int contadorNeuronas = admiNeurona.getContadorNeuronas();
+    QString infoNeurona = "";
+    int posX = 0;
+    int posY = 0;
+    float volt = 0;
 
     if(admiNeurona.getContadorNeuronas() > C_0)
     {
@@ -639,15 +661,23 @@ void MainWindow::on_pushButton_3_clicked()
         {
             pos = admiNeurona.dibujarConexionesCercanas(i, x1, y1, x2, y2);
 
-            QGraphicsTextItem* textItem = new QGraphicsTextItem(QString::number(admiNeurona.getIdNeurona(i)));
+            QGraphicsTextItem* textItem = new QGraphicsTextItem();
+            infoNeurona.append(QString("ID: "));
+            infoNeurona.append(QString::number(admiNeurona.getIdNeurona(i)));
+            admiNeurona.recuperaCoordenadaNeurona(i, posX, posY);
+            infoNeurona.append(QString("\n(%1, ").arg(posX));
+            infoNeurona.append(QString("%1)\n").arg(posY));
+            infoNeurona.append(QString("V: %1").arg(admiNeurona.getVoltaje(i)));
+            textItem->setPlainText(infoNeurona);
             textItem->setFont(QFont("Consolas", 12));
-            textItem->setTextWidth(50);
+            textItem->setTextWidth(110);
             textItem->setPos(QPoint(x1,y1));
             admiNeurona.recuperaCoordenadaNeurona(pos, x2, y2);
 
 
             escena->addItem(textItem);
             escena->addLine(x1, y1, x2, y2);
+            infoNeurona = "";
         }
     }
     else {ui->InfoDisplay->setPlainText("No hay neuronas registradas...");}

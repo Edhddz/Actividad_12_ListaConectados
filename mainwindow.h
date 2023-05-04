@@ -116,4 +116,5 @@ public:
     int dibujarConexionesCercanas(int& pos, int& x1, int& y1, int& x2, int& y2);
     int getIdNeurona(int& pos);
     void conectar(int vertex, int edge);
+    float getVoltaje(int& pos);
 };
